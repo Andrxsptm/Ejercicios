@@ -1,15 +1,17 @@
 using UnityEngine;
-
 public class WoodController : MonoBehaviour
 {
     GameObject Woodcutter;
     public Animator animator;
     Rigidbody2D rb;
     float movement;
-    public float movimientoSpeed = 5f;
+    public float movimientoSpeed = 0.5f;
     public LayerMask capaPiso;
     public bool estaPiso;
     bool saltarPressed;
+
+    float distanciaAcumulada = 0f;
+    public float distanciaPorPaso = 0.1f;
 
     void Start()
     {
@@ -46,11 +48,20 @@ public class WoodController : MonoBehaviour
         rb.linearVelocity = new Vector2(movement * movimientoSpeed, rb.linearVelocity.y);
 
         if (saltarPressed && estaPiso)
-        {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 6f);
-        }
 
         saltarPressed = false;
-    }
 
+        // ← Usa la velocidad X real * tiempo fijo: siempre exacto
+        if (estaPiso && Mathf.Abs(rb.linearVelocity.x) > 0.01f)
+        {
+            distanciaAcumulada += Mathf.Abs(rb.linearVelocity.x) * Time.fixedDeltaTime;
+
+            if (distanciaAcumulada >= distanciaPorPaso)
+            {
+                GameEngine.Instance?.SumarPasos();
+                distanciaAcumulada = 0f;
+            }
+        }
+    }
 }
