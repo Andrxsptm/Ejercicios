@@ -1,40 +1,66 @@
+using System.Collections;
 using UnityEngine;
 using TMPro;
 
 public class GameEngine : MonoBehaviour
 {
-
     public static GameEngine Instance;
-    public TMP_Text pasosText;
-    public int contPasos;
+    public TMP_Text tiempoText;
+    public int contTiempo;
+    private Coroutine timerCoroutine;
+    private bool timerRunning = false;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-	    Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        contTiempo = 0;
+        UpdateTiempoText();
+        StartTimer();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void StartTimer()
     {
-        
+        if (timerRunning) return;
+        timerCoroutine = StartCoroutine(TimerRoutine());
+        timerRunning = true;
     }
-    
-     public void SumarPasos()
+
+    public void StopTimer()
     {
-        contPasos++;
-        pasosText.text = "Pasos: " + contPasos;
+        if (!timerRunning) return;
+        if (timerCoroutine != null)
+        {
+            StopCoroutine(timerCoroutine);
+            timerCoroutine = null;
+        }
+        timerRunning = false;
+    }
+
+    public void ResetTimer()
+    {
+        StopTimer();
+        contTiempo = 0;
+        UpdateTiempoText();
+    }
+
+    private IEnumerator TimerRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1f);
+            contTiempo++;
+            UpdateTiempoText();
+        }
+    }
+
+    private void UpdateTiempoText()
+    {
+        if (tiempoText != null)
+            tiempoText.text = "Tiempo: " + contTiempo + "s";
     }
 }
