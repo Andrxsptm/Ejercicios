@@ -1,12 +1,14 @@
 using UnityEngine;
 using TMPro;
-
 public class GameEngine : MonoBehaviour
 {
-
     public static GameEngine Instance;
     public TMP_Text pasosText;
+public TMP_Text pasosIzqText;
+public TMP_Text pasosDerText;
     public int contPasos;
+    public int contPasosIzq;
+    public int contPasosDer;
 
     private void Awake()
     {
@@ -16,25 +18,31 @@ public class GameEngine : MonoBehaviour
         }
         else
         {
-	    Destroy(gameObject);
+            Destroy(gameObject);
         }
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    void Start() { }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    
-     public void SumarPasos()
+    void Update() { }
+
+    public void SumarPasos()
     {
         contPasos++;
         pasosText.text = "Pasos: " + contPasos;
+    }
+
+    public void SumarPasosIzq()
+    {
+        contPasosIzq++;
+        SumarPasos();
+pasosIzqText.text = "Pasos Izq: " + contPasosIzq;
+    }
+
+    public void SumarPasosDer()
+    {
+        contPasosDer++;
+        SumarPasos();
+pasosDerText.text = "Pasos Der: " + contPasosDer;
     }
 }

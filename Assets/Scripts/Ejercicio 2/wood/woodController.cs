@@ -1,5 +1,5 @@
 using UnityEngine;
-public class WoodController : MonoBehaviour
+public class woodController : MonoBehaviour
 {
     GameObject Woodcutter;
     public Animator animator;
@@ -10,8 +10,7 @@ public class WoodController : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public Transform detectarPiso;
     public bool estaPiso;
-    float distanciaAcumuladaIzq;
-    float distanciaAcumuladaDer;
+   
    
 
     void Start()
@@ -45,29 +44,7 @@ public class WoodController : MonoBehaviour
         animator.SetBool("piso", estaPiso);
         animator.SetFloat("velocidadY", rb.linearVelocity.y);
 
-        if (estaPiso)
-        {
-            float distancia = Mathf.Abs(movement) * movimientoSpeed * Time.deltaTime;
-
-            if (movement > 0f)
-            {
-                distanciaAcumuladaDer += distancia;
-                while (distanciaAcumuladaDer >= 1.5f)
-                {
-                    GameEngine.Instance.SumarPasosDer();
-                    distanciaAcumuladaDer -= 1.5f;
-                }
-            }
-            else if (movement < 0f)
-            {
-                distanciaAcumuladaIzq += distancia;
-                while (distanciaAcumuladaIzq >= 1.5f)
-                {
-                    GameEngine.Instance.SumarPasosIzq();
-                    distanciaAcumuladaIzq -= 1.5f;
-                }
-            }
-        }
+      
     }
 
     private void FixedUpdate()
