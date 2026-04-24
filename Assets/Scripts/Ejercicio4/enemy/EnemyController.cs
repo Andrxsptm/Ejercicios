@@ -1,16 +1,17 @@
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+public class EnemyFollow : MonoBehaviour
 {
     public Animator animator;
     public float movimientoSpeed = 2f;
     Rigidbody2D rb;
-    public LayerMask capaPiso;
-    public float groundCheckRadius = 0.8f;
-    public Transform detectarPiso;
-    public bool estaPiso;
+    public float distanciaDeteccion = 5f;
+    public float distanciaAtaque = 0.8f;
     public Transform objetivo;
     float movement;
+    bool atacando = false;
+    float cooldownAtaque = 1f;
+    float timerAtaque = 0f;
 
     void Start()
     {
@@ -18,37 +19,54 @@ public class EnemyController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 
         if (objetivo == null)
-        {
             objetivo = GameObject.FindWithTag("wood").transform;
-        }
     }
 
     void Update()
     {
         if (objetivo == null) return;
 
-        float distancia = objetivo.position.x - transform.position.x;
+        float distancia = Vector2.Distance(transform.position, objetivo.position);
+        timerAtaque += Time.deltaTime;
 
-        if (distancia > 0.1f)
+        if (distancia <= distanciaAtaque)
         {
-            movement = 1f;
-            transform.localScale = new Vector3(4, 4, 4);
+            movement = 0f;
+            atacando = true;
+            animator.SetBool("atacando", true);
+
+            if (timerAtaque >= cooldownAtaque)
+            {
+                timerAtaque = 0f;
+                objetivo.GetComponent<w9>().RecibirDano();
+            }
         }
-        else if (distancia < -0.1f)
+        else if (distancia <= distanciaDeteccion)
         {
-            movement = -1f;
-            transform.localScale = new Vector3(-4, 4, 4);
+            atacando = false;
+            animator.SetBool("atacando", false);
+
+            float direccion = objetivo.position.x - transform.position.x;
+
+            if (direccion > 0.1f)
+            {
+                movement = 1f;
+                transform.localScale = new Vector3(3, 3, 3);
+            }
+            else if (direccion < -0.1f)
+            {
+                movement = -1f;
+                transform.localScale = new Vector3(-3, 3, 3);
+            }
         }
         else
         {
             movement = 0f;
+            atacando = false;
+            animator.SetBool("atacando", false);
         }
 
         animator.SetFloat("velocidadX", Mathf.Abs(movement));
-
-        estaPiso = Physics2D.OverlapCircle(detectarPiso.position, groundCheckRadius, capaPiso);
-        animator.SetBool("piso", estaPiso);
-        animator.SetFloat("velocidadY", rb.linearVelocity.y);
     }
 
     private void FixedUpdate()
